@@ -6,10 +6,11 @@ import { UserModule } from './modules/user/user.module';
 import { AuthController } from './modules/auth/auth.controller';
 import { AuthService } from './modules/auth/auth.service';
 import { AuthModule } from './modules/auth/auth.module';
+import { CategoryModule } from './modules/category/category.module';
 import { FarmModule } from './modules/farm/farm.module';
 
 @Module({
-  imports: [UserModule, AuthModule, ConfigModule.forRoot({isGlobal: true}), FarmModule],
+  imports: [UserModule, AuthModule, ConfigModule.forRoot({isGlobal: true}), CategoryModule, FarmModule],
   controllers: [AppController, AuthController ],
   providers: [PrismaService, AuthService ],
 })
