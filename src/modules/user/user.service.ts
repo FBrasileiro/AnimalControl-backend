@@ -10,8 +10,8 @@ export class UserService {
   constructor(private prisma: PrismaService){}
   async create(data: CreateUserDto) {
     const rounds = 10;
-    let password = await bcrypt.hash(data.password, rounds)
-    data.password = password
+    let pwd = await bcrypt.hash(data.password, rounds)
+    data.password = pwd
 
     const user_exists = await this.prisma.user.findFirst({
       where:{
@@ -24,7 +24,8 @@ export class UserService {
     const user = await this.prisma.user.create({
       data,
     })
-    return user
+    const {password, ..._user} = user
+    return _user
   }
 
   findAll() {
