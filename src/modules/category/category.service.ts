@@ -25,8 +25,15 @@ export class CategoryService {
     return category
   }
 
-  findAll() {
-    return `This action returns all category`;
+  async findAll(userId: number) {
+    const farm = await this.prisma.farm.findFirst({
+      where: {owner_id: userId}
+    })
+    if (!farm) {
+      throw new HttpException("Farm error", HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+    const category = await this.prisma.category.findMany({where:{farm_id: farm.id}})
+    return category
   }
 
   findOne(id: number) {

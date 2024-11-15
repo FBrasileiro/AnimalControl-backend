@@ -16,8 +16,9 @@ export class CategoryController {
   }
 
   @Get()
-  findAll() {
-    return this.categoryService.findAll();
+  findAll(@Request() req) {
+    let userId = req.user.id
+    return this.categoryService.findAll(userId);
   }
 
   @Get(':id')
