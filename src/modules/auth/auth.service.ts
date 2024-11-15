@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt'
 import { ConfigService } from '@nestjs/config';
@@ -17,12 +17,13 @@ export class AuthService {
       }
     })
     if(user){
-      if(bcrypt.compare(user.password, password)){
+      if(await bcrypt.compare(password, user.password)){
         const {password, ...payload} = user
         return {'token': this.jwt.sign(payload)}
       }
+      throw new HttpException("Usuário ou senha incorretos", HttpStatus.NOT_FOUND)
     }else{
-      bcrypt.compare(this.config.get<string>('DUMMY_BCRYPT'), "asdfsdf")
+      await bcrypt.compare(this.config.get<string>('DUMMY_BCRYPT'), "asdfsdf")
       throw new HttpException("Usuário ou senha incorretos", HttpStatus.NOT_FOUND)
     }
 
