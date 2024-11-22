@@ -1,49 +1,50 @@
 // src/modules/animal/dto/create-animal.dto.ts
-import { IsInt, IsOptional, IsString, IsDate, IsDateString } from 'class-validator';
+import { IsInt, IsOptional, IsString, IsDateString } from 'class-validator';
 
 export class CreateAnimalDto {
-  @IsString()
+  @IsString({ message: 'Name must be a string.' })
   name: string;
 
-  @IsDateString()
+  @IsDateString({}, { message: 'Date of birth must be a valid ISO 8601 date string.' })
   dateOfBirth: string;
 
-  @IsString()
+  @IsString({ message: 'Sex must be a string.' })
   sex: string;
 
-  @IsString()
+  @IsString({ message: 'Description must be a string.' })
   @IsOptional()
   description?: string;
 
-  @IsInt()
+  @IsInt({ message: 'Category ID must be an integer.' })
   categoryId: number;
 
-  @IsInt()
+  @IsInt({ message: 'Father ID must be an integer.' })
   @IsOptional()
   fatherId?: number;
 
-  @IsInt()
+  @IsInt({ message: 'Mother ID must be an integer.' })
   @IsOptional()
   motherId?: number;
 
-  @IsString()
+  @IsString({ message: 'Label must be a string.' })
   label: string;
 
-  @IsInt()
+  @IsInt({ message: 'Average production must be an integer.' })
   @IsOptional()
   averageProduction?: number;
 
-  @IsString()
+  @IsString({ message: 'Production name must be a string.' })
   @IsOptional()
   productionName?: string;
 
-  @IsDateString()
+  @IsDateString({}, { message: 'Date of death must be a valid ISO 8601 date string.' })
   @IsOptional()
   dateOfDeath?: string;
 
-  @IsString()
+  @IsString({ message: 'Race must be a string.' })
   race: string;
 
-  @IsString()
+  @IsString({ message: 'Color must be a string.' })
   color: string;
 }
+

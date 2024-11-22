@@ -1,7 +1,8 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CreateAnimalDto } from './dto/create-animal.dto';
 import { UpdateAnimalDto } from './dto/update-animal.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { contains } from 'class-validator';
 
 @Injectable()
 export class AnimalService {
@@ -51,16 +52,59 @@ export class AnimalService {
         color,
       },
     })
-    if(animal) return animal
+    if(animal) {
+      if(animal.sex.toLowerCase() == "female")
+        await this.prisma.category.update({where: {id: categories.id}, data: {
+          females: categories.females+1
+        }})
+      else if(animal.sex.toLowerCase() == "male")
+        await this.prisma.category.update({where: {id: categories.id}, data: {
+          males: categories.males+1
+        }})
+      else {
+        throw new HttpException("Error", HttpStatus.INTERNAL_SERVER_ERROR)
+      }
+      return animal
+    }
     throw new HttpException("Error", HttpStatus.INTERNAL_SERVER_ERROR)
   }
 
-  findAll() {
-    return `This action returns all animal`;
+  async findAll(categoryId: string, userId: string) {
+    const farm = await this.prisma.farm.findFirst({
+      where: {owner_id: parseInt(userId)}
+    })
+    if (!farm) {
+      throw new HttpException("Farm error", HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+    const categories = await this.prisma.category.findFirst({where: {farm_id: farm.id, id: parseInt(categoryId)}})
+    if (!categories) {
+      throw new HttpException("Categories error", HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    let animals = this.prisma.animal.findMany({where: { category_id: parseInt(categoryId) }})
+
+    if(animals) return animals
+
+    throw new HttpException("Animals error", HttpStatus.INTERNAL_SERVER_ERROR)
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} animal`;
+  async findQuery(userId, categoryId, name, label) {
+    const farm = await this.prisma.farm.findFirst({
+      where: {owner_id: parseInt(userId)}
+    })
+    if (!farm) {
+      throw new HttpException("Farm error", HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+    const categories = await this.prisma.category.findFirst({where: {farm_id: farm.id, id: parseInt(categoryId)}})
+    if (!categories) {
+      throw new HttpException("Categories error", HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    let animals = this.prisma.animal.findMany({where: { category_id: parseInt(categoryId), name: {contains: name}, label: {contains: label} }})
+
+    if(animals) return animals
+
+    throw new HttpException("Animals error", HttpStatus.INTERNAL_SERVER_ERROR)
   }
 
   update(id: number, updateAnimalDto: UpdateAnimalDto) {

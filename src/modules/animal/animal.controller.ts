@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Query, Body, Patch, Param, Delete, Request, UseGuards } from '@nestjs/common';
 import { AnimalService } from './animal.service';
 import { CreateAnimalDto } from './dto/create-animal.dto';
 import { UpdateAnimalDto } from './dto/update-animal.dto';
@@ -15,14 +15,21 @@ export class AnimalController {
     return this.animalService.create(createAnimalDto, userId);
   }
 
-  @Get()
-  findAll() {
-    return this.animalService.findAll();
+  @Get(':categoryId')
+  findAll(@Param('categoryId') categoryId, @Request() req) {
+    let userId = req.user.id
+    return this.animalService.findAll(categoryId, userId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.animalService.findOne(+id);
+  @Get(':categoryId/query')
+  findQuery(
+    @Param('categoryId') categoryId: string,
+    @Query() query: { name?: string; label?: string },
+    @Request() req,
+  ) {
+    const userId = req.user.id;
+    const { name, label } = query;
+    return this.animalService.findQuery(userId, categoryId, name, label);
   }
 
   @Patch(':id')
