@@ -18,7 +18,6 @@ export class FarmController {
   @Get()
   findAll(@Request() req) {
     let userId = req.user.id
-    console.log(userId)
     return this.farmService.findAll(userId);
   }
 
