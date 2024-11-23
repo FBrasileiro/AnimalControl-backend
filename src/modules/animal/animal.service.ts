@@ -24,6 +24,7 @@ export class AnimalService {
       color,
     } = createAnimalDto;
 
+    Logger.log("REQ: ", createAnimalDto)
     const farm = await this.prisma.farm.findFirst({
       where: {owner_id: userId}
     })
@@ -105,6 +106,26 @@ export class AnimalService {
     if(animals) return animals
 
     throw new HttpException("Animals error", HttpStatus.INTERNAL_SERVER_ERROR)
+  }
+
+  async findAnimal(userId, animalId) {
+    let animal = this.prisma.animal.findFirst({where: {id: parseInt(animalId)}})
+    if(!animal)
+      throw new HttpException("Animals error", HttpStatus.INTERNAL_SERVER_ERROR)
+    let category = animal.category()
+    let farm_ = await category.farm().finally()
+    const farm = await this.prisma.farm.findFirst({
+      where: {owner_id: parseInt(userId)}
+    })
+    if (!farm) {
+      throw new HttpException("Farm error", HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+    if (farm_.id !== farm.id) {
+      throw new HttpException("Categories error", HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    return animal
+
   }
 
   update(id: number, updateAnimalDto: UpdateAnimalDto) {

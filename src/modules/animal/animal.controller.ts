@@ -32,6 +32,15 @@ export class AnimalController {
     return this.animalService.findQuery(userId, categoryId, name, label);
   }
 
+  @Get('/find/:id')
+  findAnimal(
+    @Param('id') animalId,
+    @Request() req,
+  ) {
+    const userId = req.user.id;
+    return this.animalService.findAnimal(userId, animalId);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateAnimalDto: UpdateAnimalDto) {
     return this.animalService.update(+id, updateAnimalDto);
